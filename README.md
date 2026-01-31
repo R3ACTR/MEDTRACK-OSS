@@ -16,7 +16,7 @@ MedTrack OSS is a production-ready, open-source medication management and adhere
 ## 🛠️ Technology Stack
 
 - **Backend**: Python 3.10+, FastAPI, PostgreSQL/MongoDB, Celery/APScheduler.
-- **Frontend**: Astro + React Islands (Primary), Vanilla JS (Legacy/Lite).
+- **Mobile App**: Flutter (Dart)
 - **Infrastructure**: Docker, Nginx.
 - **Monitoring**: Prometheus & Grafana ready.
 
@@ -24,11 +24,11 @@ MedTrack OSS is a production-ready, open-source medication management and adhere
 
 ```text
 medtrack-oss/
- ├── backend/      # FastAPI Python API
- ├── frontend/     # Astro & React + Vanilla JS fallback
- ├── ml/           # Machine Learning modules
- ├── docs/         # Documentation (User, Caregiver, API)
- ├── docker/       # Containerization config
+ ├── backend/              # FastAPI Python API
+ ├── mobile_app/           # Flutter Mobile App (New)
+ ├── ml/                   # Machine Learning modules
+ ├── docs/                 # Documentation (User, Caregiver, API)
+ ├── docker/               # Containerization config
 ```
 
 ## 🚥 Quick Start
@@ -50,10 +50,10 @@ cp .env.example .env
 pip install -r requirements.txt
 python app/main.py
 
-# Setup Frontend (Astro)
-cd ../frontend/astro
-npm install
-npm run dev
+# Setup Mobile App (Flutter)
+cd ../mobile_app
+flutter pub get
+flutter run
 ```
 
 ## 🤝 Contributing
