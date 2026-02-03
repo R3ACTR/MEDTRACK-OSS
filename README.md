@@ -125,7 +125,7 @@ FCM_SERVER_KEY=your_firebase_server_key_here
 ## Project Structure
 
 Here's an overview of the Flutter app's folder structure:
-
+```
 mobile_app/
 ├── android/                 # Android-specific configuration
 ├── ios/                     # iOS-specific configuration
@@ -149,6 +149,7 @@ mobile_app/
 ├── pubspec.yaml            # Package dependencies
 ├── .env.example            # Environment variables template
 └── README.md               # This file
+```
 
 ### Key Directories Explained
 
