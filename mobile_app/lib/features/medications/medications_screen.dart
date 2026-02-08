@@ -25,11 +25,6 @@ class MedicationsScreen extends StatefulWidget {
 }
 
 class _MedicationsScreenState extends State<MedicationsScreen> {
-  @override
-  State<MedicationsScreen> createState() => _MedicationsScreenState();
-}
-
-class _MedicationsScreenState extends State<MedicationsScreen> {
   // Mock medication data
   final List<_Medication> medications = [
     _Medication(
