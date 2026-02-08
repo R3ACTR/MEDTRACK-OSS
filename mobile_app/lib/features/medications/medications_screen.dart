@@ -368,6 +368,7 @@ class _MedicationCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       appBar: AppBar(title: const Text('Medications')),
       body: ListView.builder(
         itemCount: MedicationsScreen.medicationList.length,
