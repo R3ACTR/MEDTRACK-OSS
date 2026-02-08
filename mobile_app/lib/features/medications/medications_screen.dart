@@ -89,7 +89,7 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
             : medications.where((m) => !m.isActive).toList();
 
     return Scaffold(
-z      appBar: AppBar(
+      appBar: AppBar(
         title: const Text('Medications'),
         elevation: 0,
       ),
