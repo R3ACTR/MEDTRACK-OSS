@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../models/patient.dart';
+import '../../schedules/schedule_appointment_view.dart';
+import 'add_patient_note_view.dart';
 
 class PatientDetailsView extends StatelessWidget {
   final Patient patient;
@@ -170,28 +173,49 @@ class PatientDetailsView extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildActionButton(context, Icons.call, 'Call', Colors.green),
-          _buildActionButton(context, Icons.message, 'Message', Colors.blue),
-          _buildActionButton(context, Icons.calendar_today, 'Schedule', Colors.purple),
-          _buildActionButton(context, Icons.note_add, 'Add Note', Colors.orange),
+          _buildActionButton(context, Icons.call, 'Call', Colors.green,onTap: (){
+            makePhoneCall(patient.phoneNumber);
+          }),
+          _buildActionButton(context, Icons.message, 'Message', Colors.blue, onTap: () {
+            sendSms(patient.phoneNumber);
+          }),
+          _buildActionButton(context, Icons.calendar_today, 'Schedule', Colors.purple, onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ScheduleAppointmentView(patient: patient),
+              ),
+            );
+          }),
+          _buildActionButton(context, Icons.note_add, 'Add Note', Colors.orange, onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddPatientNoteView(patient: patient),
+              ),
+            );
+          }),
         ],
       ),
     );
   }
 
-  Widget _buildActionButton(BuildContext context, IconData icon, String label, Color color) {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 24,
-          backgroundColor: color.withValues(alpha: 0.1),
-          child: Icon(icon, color: color),
-        ),
-        const SizedBox(height: 8),
-        Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w600,
-        )),
-      ],
+  Widget _buildActionButton(BuildContext context, IconData icon, String label, Color color, {VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: color.withValues(alpha: 0.1),
+            child: Icon(icon, color: color),
+          ),
+          const SizedBox(height: 8),
+          Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          )),
+        ],
+      ),
     );
   }
 
@@ -252,5 +276,29 @@ class PatientDetailsView extends StatelessWidget {
         onTap: () {},
       ),
     );
+  }
+}
+
+Future<void> makePhoneCall(String phoneNumber)  async{
+  final Uri launchUri = Uri(
+    scheme: 'tel',
+    path: phoneNumber
+  );
+  if(await canLaunchUrl(launchUri)){
+    await launchUrl(launchUri);
+  } else {
+    throw 'Could not launch $phoneNumber';
+  }
+}
+
+Future<void> sendSms(String phoneNumber) async {
+  final Uri launchUri = Uri(
+    scheme: 'sms',
+    path: phoneNumber,
+  );
+  if (await canLaunchUrl(launchUri)) {
+    await launchUrl(launchUri);
+  } else {
+    throw 'Could not launch $phoneNumber';
   }
 }
