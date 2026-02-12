@@ -418,11 +418,10 @@ class _PatientsScreenState extends State<PatientsScreen> {
   }
 
   void _navigateToPatientDetails(Patient patient) {
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => PatientDetailsView(patient: patient),
-      ),
+      PatientDetailsView.route,
+      arguments: patient,
     );
   }
 }

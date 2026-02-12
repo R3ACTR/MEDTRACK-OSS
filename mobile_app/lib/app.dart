@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/features/patients/widgets/patient_details_view.dart';
+import 'package:mobile_app/models/patient.dart';
 import 'package:mobile_app/routes.dart';
 import 'features/home/home_screen.dart';
 import 'theme/app_theme.dart';
@@ -13,6 +15,17 @@ class MedTrackApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       initialRoute: HomeScreen.route,
       routes: getRoutes(),
+      onGenerateRoute: (settings) {
+        if (settings.name == '/patient_details_view') {
+          final patient = settings.arguments as Patient;
+          return MaterialPageRoute(
+            builder: (context) => PatientDetailsView(patient: patient),
+          );
+        }
+        
+        // fallback for undefined routes
+        return null;
+      },
     );
   }
 
