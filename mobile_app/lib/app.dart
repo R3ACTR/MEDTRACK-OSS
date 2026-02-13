@@ -40,10 +40,12 @@ class MedTrackApp extends StatelessWidget {
           }
         }
         if (settings.name == Routes.patientDetails) {
-          final patient = settings.arguments as Patient;
-          return MaterialPageRoute(
-            builder: (context) => PatientDetailsView(patient: patient),
-          );
+          if (settings.arguments is Patient) {
+            final patient = settings.arguments as Patient;
+            return MaterialPageRoute(
+              builder: (context) => PatientDetailsView(patient: patient),
+            );
+          }
         }
         
         // fallback for undefined routes
