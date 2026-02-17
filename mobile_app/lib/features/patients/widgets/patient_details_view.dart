@@ -20,7 +20,9 @@ class PatientDetailsView extends StatelessWidget {
         ),
         title: const Text('Patient Profile'),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.edit)),
+          IconButton(onPressed: () {
+            Navigator.pushNamed(context, Routes.addPatient, arguments: patient);
+          }, icon: const Icon(Icons.edit)),
           IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
         ],
       ),
