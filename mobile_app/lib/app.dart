@@ -59,15 +59,16 @@ class MedTrackApp extends StatelessWidget {
           return MaterialPageRoute(builder: (context) => _errorScreen());
         }
         if (settings.name == Routes.addMedication) {
-        final medication = settings.arguments is Medication
-            ? settings.arguments as Medication
-            : null;
-        
-        return MaterialPageRoute(
-          builder: (context) => AddMedicationScreen(existingMedication: medication),
+          final medication = settings.arguments is Medication
+              ? settings.arguments as Medication
+              : null;
+
+          return MaterialPageRoute(
+            builder: (context) =>
+                AddMedicationScreen(existingMedication: medication),
           );
         }
-        
+
         // fallback for undefined routes
         return null;
       },

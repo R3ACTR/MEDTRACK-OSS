@@ -143,10 +143,8 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
   }
 
   Future<void> _newMedication(BuildContext context) async {
-    final newMedication = await Navigator.pushNamed(
-      context,
-      Routes.addMedication
-    );
+    final newMedication =
+        await Navigator.pushNamed(context, Routes.addMedication);
     if (newMedication != null && newMedication is Medication) {
       setState(() {
         medications.add(newMedication);
@@ -154,13 +152,12 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
     }
   }
 
-  Future<void> _editMedication(BuildContext context, Medication medicationToEdit) async {
+  Future<void> _editMedication(
+      BuildContext context, Medication medicationToEdit) async {
     final updatedMedication = await Navigator.pushNamed(
-      context,
-      Routes.addMedication,
-      arguments: medicationToEdit
-    );
-    
+        context, Routes.addMedication,
+        arguments: medicationToEdit);
+
     if (updatedMedication != null && updatedMedication is Medication) {
       setState(() {
         int index = medications.indexWhere((m) => m.id == updatedMedication.id);
@@ -226,7 +223,9 @@ class _MedicationCard extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: medication.isActive ? medication.color.withOpacity(0.2) : Colors.grey[200]!,
+            color: medication.isActive
+                ? medication.color.withOpacity(0.2)
+                : Colors.grey[200]!,
           ),
         ),
         padding: const EdgeInsets.all(16),
@@ -270,13 +269,16 @@ class _MedicationCard extends StatelessWidget {
                                   : Colors.grey[200],
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
                             child: Text(
                               medication.isActive ? 'Active' : 'Inactive',
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
-                                color: medication.isActive ? const Color(0xFF4CAF50) : Colors.black54,
+                                color: medication.isActive
+                                    ? const Color(0xFF4CAF50)
+                                    : Colors.black54,
                               ),
                             ),
                           ),

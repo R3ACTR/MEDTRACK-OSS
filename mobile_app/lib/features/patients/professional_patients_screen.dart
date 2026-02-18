@@ -8,10 +8,12 @@ class ProfessionalPatientsScreen extends StatefulWidget {
   static const String route = '/professional-patients';
 
   @override
-  State<ProfessionalPatientsScreen> createState() => _ProfessionalPatientsScreenState();
+  State<ProfessionalPatientsScreen> createState() =>
+      _ProfessionalPatientsScreenState();
 }
 
-class _ProfessionalPatientsScreenState extends State<ProfessionalPatientsScreen> {
+class _ProfessionalPatientsScreenState
+    extends State<ProfessionalPatientsScreen> {
   final List<Patient> _patients = [
     Patient(
       id: 'P001',
@@ -70,14 +72,20 @@ class _ProfessionalPatientsScreenState extends State<ProfessionalPatientsScreen>
 
   List<Patient> get _filteredPatients {
     return _patients.where((p) {
-      final matchesQuery = p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          p.condition.toLowerCase().contains(_searchQuery.toLowerCase());
+      final matchesQuery =
+          p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+              p.condition.toLowerCase().contains(_searchQuery.toLowerCase());
       final matchesStatus = _statusFilter == 'All' || p.status == _statusFilter;
       return matchesQuery && matchesStatus;
     }).toList();
   }
 
-  final List<String> _statusOptions = ['All', 'Stable', 'Recovering', 'Critical'];
+  final List<String> _statusOptions = [
+    'All',
+    'Stable',
+    'Recovering',
+    'Critical'
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +119,7 @@ class _ProfessionalPatientsScreenState extends State<ProfessionalPatientsScreen>
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        heroTag: "professional_patient_fab",
+        heroTag: 'professional_patient_fab',
         onPressed: () {
           Navigator.pushNamed(context, Routes.addPatient);
         },
@@ -130,7 +138,8 @@ class _ProfessionalPatientsScreenState extends State<ProfessionalPatientsScreen>
           prefixIcon: const Icon(Icons.search),
           filled: true,
           fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
@@ -170,7 +179,10 @@ class _ProfessionalPatientsScreenState extends State<ProfessionalPatientsScreen>
           const SizedBox(height: 16),
           Text(
             'No patients found',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(color: Colors.grey[600]),
           ),
         ],
       ),
