@@ -378,12 +378,24 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
           const SizedBox(height: 16),
           if (_currentPatient.appointments.isNotEmpty)
             ..._currentPatient.appointments.map((appointment) {
+              Color statusColor = Colors.purple;
+              IconData statusIcon = Icons.calendar_today;
+              
+              if (appointment.status == 'Completed') {
+                statusColor = Colors.green;
+                statusIcon = Icons.check_circle;
+              } else if (appointment.status == 'Cancelled') {
+                statusColor = Colors.red;
+                statusIcon = Icons.cancel;
+              }
+
               return _buildHistoryItem(
                 context,
-                appointment.type,
+                '${appointment.type} (${appointment.status})',
                 '${appointment.date.day}/${appointment.date.month}/${appointment.date.year} • ${appointment.time.hour}:${appointment.time.minute.toString().padLeft(2, '0')}',
-                Icons.calendar_today,
-                color: Colors.purple,
+                statusIcon,
+                color: statusColor,
+                onTap: () => _showAppointmentActions(context, appointment),
               );
             }),
           if (_currentPatient.appointments.isEmpty)
@@ -515,6 +527,97 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     );
   }
 
+  void _showAppointmentActions(BuildContext context, Appointment appointment) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  'Manage Appointment',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const Divider(),
+              if (appointment.status == 'Scheduled')
+                ListTile(
+                  leading: const Icon(Icons.check_circle, color: Colors.green),
+                  title: const Text('Mark as Completed'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _updateAppointmentStatus(appointment, 'Completed');
+                  },
+                ),
+              if (appointment.status == 'Scheduled')
+                ListTile(
+                  leading: const Icon(Icons.edit_calendar, color: Colors.orange),
+                  title: const Text('Reschedule'),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    final result = await Navigator.pushNamed(
+                      context,
+                      Routes.scheduleAppointment,
+                      arguments: {
+                        'patient': _currentPatient,
+                        'appointment': appointment,
+                      },
+                    );
+                    
+                    if (result != null && result is Appointment) {
+                      _updateAppointmentData(result);
+                    }
+                  },
+                ),
+              if (appointment.status == 'Scheduled')
+                ListTile(
+                  leading: const Icon(Icons.cancel, color: Colors.red),
+                  title: const Text('Cancel Appointment'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _updateAppointmentStatus(appointment, 'Cancelled');
+                  },
+                ),
+                
+              if (appointment.status != 'Scheduled')
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'This appointment is already ${appointment.status.toLowerCase()}.',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _updateAppointmentStatus(Appointment appointment, String newStatus) {
+    final updatedAppointment = appointment.copyWith(status: newStatus);
+    _updateAppointmentData(updatedAppointment);
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Appointment marked as $newStatus')),
+    );
+  }
+
+  void _updateAppointmentData(Appointment updatedAppointment) {
+    setState(() {
+      final index = _currentPatient.appointments.indexWhere((a) => a.id == updatedAppointment.id);
+      if (index != -1) {
+        _currentPatient.appointments[index] = updatedAppointment;
+      }
+    });
+  }
+
   Future<void> _editNote(PatientNote note) async {
     final result = await Navigator.pushNamed(context, Routes.addPatientNote, arguments: {
       'patient': _currentPatient,
@@ -572,6 +675,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     String subtitle,
     IconData icon, {
     Color color = Colors.blue,
+    VoidCallback? onTap,
   }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -593,7 +697,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
         ),
         subtitle: Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
         trailing: const Icon(Icons.chevron_right),
-        onTap: () {},
+        onTap: onTap,
       ),
     );
   }
