@@ -183,7 +183,6 @@ class _ProfessionalPatientsScreenState
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        heroTag: 'professional_patient_fab',
         onPressed: () async {
           final newPatient =
               await Navigator.pushNamed(context, Routes.addPatient);

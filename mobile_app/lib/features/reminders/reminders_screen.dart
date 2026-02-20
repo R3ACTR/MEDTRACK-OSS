@@ -114,7 +114,6 @@ class _RemindersScreenState extends State<RemindersScreen> {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        heroTag: 'reminder_fab',
         onPressed: () async {
           final result = await Navigator.pushNamed(
             context,
