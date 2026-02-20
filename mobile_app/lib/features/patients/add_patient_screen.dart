@@ -14,11 +14,11 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
   bool get isEditing => widget.existingPatient != null;
 
   final _formKey = GlobalKey<FormState>();
-  late String _name;
-  late int _age;
-  late String _condition;
-  late String _gender;
-  late String _status;
+  String _name = '';
+  int _age = 0;
+  String _condition = '';
+  String _gender = '';
+  String _status = '';
   bool _isGenderFocused = false;
   String? _genderError;
   String? _statusError;
