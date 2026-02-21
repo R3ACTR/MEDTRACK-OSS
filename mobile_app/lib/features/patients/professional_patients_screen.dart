@@ -4,6 +4,7 @@ import '../../models/patient.dart';
 import 'widgets/patient_card.dart';
 import '../../models/appointment.dart';
 import '../../models/patient_note.dart';
+import '../../models/medication_log.dart';
 import 'package:uuid/uuid.dart';
 
 class ProfessionalPatientsScreen extends StatefulWidget {
@@ -48,6 +49,25 @@ class _ProfessionalPatientsScreenState
           date: DateTime.now().subtract(const Duration(days: 2)),
         ),
       ],
+      medicationLogs: [
+        MedicationLog(
+          medicationName: 'Lisinopril',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 1, hours: 2)),
+          takenTime: DateTime.now().subtract(const Duration(days: 1, hours: 2)),
+          status: 'Taken',
+        ),
+        MedicationLog(
+          medicationName: 'Lisinopril',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 2, hours: 2)),
+          takenTime: DateTime.now().subtract(const Duration(days: 2, hours: 1)),
+          status: 'Taken',
+        ),
+        MedicationLog(
+          medicationName: 'Lisinopril',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 3, hours: 2)),
+          status: 'Skipped',
+        ),
+      ],
     ),
     Patient(
       id: 'P002',
@@ -58,6 +78,29 @@ class _ProfessionalPatientsScreenState
       status: 'Recovering',
       lastVisit: DateTime.now().subtract(const Duration(days: 5)),
       phoneNumber: '+91 87654 32109',
+      medicationLogs: [
+        MedicationLog(
+          medicationName: 'Metformin',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 1)),
+          takenTime: DateTime.now().subtract(const Duration(days: 1)),
+          status: 'Taken',
+        ),
+        MedicationLog(
+          medicationName: 'Metformin',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 2)),
+          status: 'Skipped',
+        ),
+        MedicationLog(
+          medicationName: 'Metformin',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 3)),
+          status: 'Skipped',
+        ),
+        MedicationLog(
+          medicationName: 'Metformin',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 4)),
+          status: 'Skipped',
+        ),
+      ],
     ),
     Patient(
       id: 'P003',
@@ -92,7 +135,7 @@ class _ProfessionalPatientsScreenState
   ];
 
   String _searchQuery = '';
-  String _statusFilter = 'All';
+  String _quickFilter = 'All';
   String? _selectedGender;
   String? _selectedCondition;
   String _sortBy = 'Name';
@@ -104,16 +147,29 @@ class _ProfessionalPatientsScreenState
 
   List<Patient> get _filteredPatients {
     var filtered = _patients.where((p) {
-      final matchesQuery =
-          p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-              p.condition.toLowerCase().contains(_searchQuery.toLowerCase());
-      final matchesStatus = _statusFilter == 'All' || p.status == _statusFilter;
-      final matchesGender =
-          _selectedGender == null || p.gender == _selectedGender;
-      final matchesCondition =
-          _selectedCondition == null || p.condition == _selectedCondition;
+      final searchLower = _searchQuery.toLowerCase();
+      final matchesQuery = p.name.toLowerCase().contains(searchLower) ||
+          p.condition.toLowerCase().contains(searchLower) ||
+          p.id.toLowerCase().contains(searchLower) ||
+          p.phoneNumber.toLowerCase().contains(searchLower);
+          
+      bool matchesQuickFilter = true;
+      final now = DateTime.now();
+      if (_quickFilter == 'Requires Attention') {
+        matchesQuickFilter = p.status == 'Critical';
+      } else if (_quickFilter == 'Upcoming Appointments') {
+        matchesQuickFilter = p.appointments.any((a) {
+          final date = a.date;
+          return date.isAfter(now) || (date.year == now.year && date.month == now.month && date.day == now.day);
+        });
+      } else if (_quickFilter == 'Recent Activity') {
+        matchesQuickFilter = p.lastVisit.isAfter(now.subtract(const Duration(days: 7)));
+      }
 
-      return matchesQuery && matchesStatus && matchesGender && matchesCondition;
+      final matchesGender = _selectedGender == null || p.gender == _selectedGender;
+      final matchesCondition = _selectedCondition == null || p.condition == _selectedCondition;
+      
+      return matchesQuery && matchesQuickFilter && matchesGender && matchesCondition;
     }).toList();
 
     switch (_sortBy) {
@@ -131,12 +187,7 @@ class _ProfessionalPatientsScreenState
     return filtered;
   }
 
-  final List<String> _statusOptions = [
-    'All',
-    'Stable',
-    'Recovering',
-    'Critical'
-  ];
+  final List<String> _quickFilterOptions = ['All', 'Requires Attention', 'Upcoming Appointments', 'Recent Activity'];
 
   @override
   Widget build(BuildContext context) {
@@ -204,7 +255,7 @@ class _ProfessionalPatientsScreenState
       child: TextField(
         onChanged: (value) => setState(() => _searchQuery = value),
         decoration: InputDecoration(
-          hintText: 'Search patients, conditions...',
+          hintText: 'Search by name, ID, condition...',
           prefixIcon: const Icon(Icons.search),
           filled: true,
           fillColor: Colors.white,
@@ -261,15 +312,19 @@ class _ProfessionalPatientsScreenState
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        children: _statusOptions.map((status) {
-          final selected = _statusFilter == status;
+        children: _quickFilterOptions.map((filter) {
+          final selected = _quickFilter == filter;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ChoiceChip(
-              label: Text(status),
+              label: Text(filter),
               selected: selected,
-              onSelected: (_) => setState(() => _statusFilter = status),
+              onSelected: (_) => setState(() => _quickFilter = filter),
               selectedColor: Colors.blueAccent,
+              labelStyle: TextStyle(
+                color: selected ? Colors.white : Colors.black87,
+                fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+              ),
             ),
           );
         }).toList(),

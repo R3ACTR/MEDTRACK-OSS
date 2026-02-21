@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../models/reminder.dart';
 
 class AddReminderScreen extends StatefulWidget {
-  const AddReminderScreen({super.key});
+  final Reminder? reminderToEdit;
+  const AddReminderScreen({super.key, this.reminderToEdit});
   static const String route = '/add_reminder';
 
   @override
@@ -16,10 +17,40 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   String _patientName = '';
   TimeOfDay _scheduledTime = TimeOfDay.now();
   final List<String> _type = ['Morning', 'Afternoon', 'Evening', 'Weekly'];
-  final bool _isEnabled = true;
+  bool _isEnabled = true;
   int _notificationCount = 1;
-  int id = 5;
   String? _selectedType;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.reminderToEdit != null) {
+      final reminder = widget.reminderToEdit!;
+      _medicationName = reminder.medication;
+      _patientName = reminder.patient;
+      _selectedType = reminder.type;
+      _isEnabled = reminder.isEnabled;
+      _notificationCount = reminder.notificationCount;
+      _scheduledTime = _parseTime(reminder.scheduledTime);
+    }
+  }
+
+  TimeOfDay _parseTime(String timeString) {
+    try {
+      final parts = timeString.split(' ');
+      final timeParts = parts[0].split(':');
+      int hour = int.parse(timeParts[0]);
+      int minute = int.parse(timeParts[1]);
+      if (parts[1] == 'PM' && hour != 12) {
+        hour += 12;
+      } else if (parts[1] == 'AM' && hour == 12) {
+        hour = 0;
+      }
+      return TimeOfDay(hour: hour, minute: minute);
+    } catch (e) {
+      return TimeOfDay.now();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +59,11 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-          appBar: AppBar(title: const Text("Add Reminder")),
+          appBar: AppBar(
+            title: Text(
+              widget.reminderToEdit != null ? "Edit Reminder" : "Add Reminder",
+            ),
+          ),
           body: Padding(
               padding: EdgeInsets.all(20),
               child: Form(
@@ -37,6 +72,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                   child: Column(
                     children: [
                       TextFormField(
+                        initialValue: _patientName,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Please Enter Patient Name";
@@ -80,6 +116,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                         height: 15,
                       ),
                       TextFormField(
+                        initialValue: _medicationName,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Please Enter Medication Name";
@@ -120,7 +157,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                           }
                           return null;
                         },
-                        initialValue: _selectedType,
+                        value: _selectedType,
                         hint: const Text("Type"),
                         decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
@@ -276,8 +313,11 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                           if (_formKey.currentState!.validate() &&
                               _selectedType != null) {
                             _formKey.currentState!.save();
+                            final reminderId = widget.reminderToEdit?.id ??
+                                DateTime.now().millisecondsSinceEpoch;
+                            
                             final newReminder = Reminder(
-                              id: DateTime.now().millisecondsSinceEpoch,
+                              id: reminderId,
                               medication: _medicationName,
                               patient: _patientName,
                               scheduledTime: _scheduledTime.format(context),
@@ -289,7 +329,9 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                             Navigator.pop(context, newReminder);
                           }
                         },
-                        child: Text("Add Reminder"),
+                        child: Text(widget.reminderToEdit != null
+                            ? "Update Reminder"
+                            : "Add Reminder"),
                       ),
                     ],
                   ),

@@ -1,5 +1,6 @@
 import 'appointment.dart';
 import 'patient_note.dart';
+import 'medication_log.dart';
 
 class Patient {
   final String id;
@@ -12,6 +13,7 @@ class Patient {
   final String phoneNumber;
   final List<Appointment> appointments;
   final List<PatientNote> notes;
+  final List<MedicationLog> medicationLogs;
 
   Patient({
     required this.id,
@@ -24,6 +26,7 @@ class Patient {
     this.phoneNumber = 'N/A',
     this.appointments = const [],
     this.notes = const [],
+    this.medicationLogs = const [],
   });
 
   factory Patient.fromJson(Map<String, dynamic> json) {
@@ -42,6 +45,9 @@ class Patient {
       notes: (json['notes'] as List<dynamic>?)
           ?.map((e) => PatientNote.fromJson(e as Map<String, dynamic>))
           .toList() ?? [],
+      medicationLogs: (json['medicationLogs'] as List<dynamic>?)
+          ?.map((e) => MedicationLog.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
     );
   }
 
@@ -57,6 +63,7 @@ class Patient {
       'phoneNumber': phoneNumber,
       'appointments': appointments.map((e) => e.toJson()).toList(),
       'notes': notes.map((e) => e.toJson()).toList(),
+      'medicationLogs': medicationLogs.map((e) => e.toJson()).toList(),
     };
   }
 }
