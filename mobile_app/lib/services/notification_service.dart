@@ -1,62 +1,68 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+class NotificationService {
+  // Singleton pattern to ensure only one instance of the service exists
+  static final NotificationService _instance = NotificationService._internal();
+  factory NotificationService() => _instance;
+  NotificationService._internal();
 
-Future<void> initNotifications() async {
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+  final FlutterLocalNotificationsPlugin _plugin =
+      FlutterLocalNotificationsPlugin();
 
-  // iOS/Darwin settings
-  const DarwinInitializationSettings initializationSettingsDarwin =
-      DarwinInitializationSettings();
+  Future<void> init() async {
+    // Define platform-specific settings
+    const AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-  const InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-    iOS: initializationSettingsDarwin,
-  );
+    // iOS/Darwin settings
+    const DarwinInitializationSettings iOSSettings =
+        DarwinInitializationSettings();
 
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'test_channel_id', // Must match the ID used in showTestNotification
-    'Test Reminders',
-    description: 'Used for testing medication alerts',
-    importance: Importance.max,
-  );
+    const InitializationSettings initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iOSSettings,
+    );
 
-  // Resolve the Android plugin and create the channel
-  final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-      flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
+    // Define and create the Android Notification Channel (Required for Android 8.0+)
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'test_channel_id', // Must match the ID used in showTestNotification
+      'Test Reminders',
+      description: 'Used for testing medication alerts',
+      importance: Importance.max,
+    );
 
-  // Create the channel before initializing
-  await androidImplementation?.createNotificationChannel(channel);
+    // Resolve the Android plugin and create the channel
+    final androidImpl = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
 
-  await flutterLocalNotificationsPlugin.initialize(
-    settings: initializationSettings,
-  );
+    // Create the channel before initializing
+    await androidImpl?.createNotificationChannel(channel);
 
-  // Request permissions for Android 13+
-  await androidImplementation?.requestNotificationsPermission();
-}
+    await _plugin.initialize(settings: initSettings);
 
-Future<void> showTestNotification(String medication, String patient) async {
-  const AndroidNotificationDetails androidNotificationDetails =
-      AndroidNotificationDetails(
-    'test_channel_id', // Required for Android 8.0+
-    'Test Reminders', // User-visible channel name
-    channelDescription: 'Used for testing medication alerts',
-    importance: Importance.max,
-    priority: Priority.high,
-    ticker: 'ticker',
-  );
+    // Request permissions for Android 13+
+    await androidImpl?.requestNotificationsPermission();
+  }
 
-  const NotificationDetails notificationDetails =
-      NotificationDetails(android: androidNotificationDetails);
+  Future<void> showTestNotification(String medication, String patient) async {
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+      'test_channel_id', // Required for Android 8.0+
+      'Test Reminders', // User-visible channel name
+      channelDescription: 'Used for testing medication alerts',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
 
-  await flutterLocalNotificationsPlugin.show(
-    id: 0,
-    title: 'Medication Test: $medication',
-    body: 'Reminder for $patient',
-    notificationDetails: notificationDetails,
-  );
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+
+    await _plugin.show(
+      id: 0,
+      title: 'Medication Test: $medication',
+      body: 'Reminder for $patient',
+      notificationDetails: notificationDetails,
+    );
+  }
 }

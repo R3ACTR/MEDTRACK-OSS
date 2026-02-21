@@ -309,7 +309,7 @@ class _ReminderCardState extends State<_ReminderCard> {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      showTestNotification(
+                      NotificationService().showTestNotification(
                         widget.reminder.medication,
                         widget.reminder.patient,
                       );

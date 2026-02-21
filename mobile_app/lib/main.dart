@@ -4,6 +4,6 @@ import 'app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initNotifications();
+  await NotificationService().init();
   runApp(const MedTrackApp());
 }
