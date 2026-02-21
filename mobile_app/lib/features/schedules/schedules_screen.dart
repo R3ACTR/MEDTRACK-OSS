@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/reminder.dart';
 import 'package:mobile_app/models/schedule_entry.dart';
+import 'package:mobile_app/features/reminders/reminders_screen.dart';
+import 'package:mobile_app/routes.dart';
 
 class SchedulesScreen extends StatefulWidget {
   const SchedulesScreen({super.key});
@@ -309,9 +312,16 @@ class _ScheduleCard extends StatelessWidget {
                 : schedule.status == 'Upcoming'
                     ? OutlinedButton.icon(
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Reminder set!')),
-                          );
+                          final newReminder = Reminder(
+                              id: DateTime.now().millisecondsSinceEpoch,
+                              medication: schedule.medication,
+                              patient: schedule.patient,
+                              scheduledTime: schedule.time,
+                              type: "",
+                              isEnabled: true,
+                              notificationCount: 0,
+                              icon: schedule.icon);
+                          setReminder(context, newReminder);
                         },
                         icon: const Icon(Icons.notifications_rounded, size: 18),
                         label: const Text('Set Reminder'),
@@ -339,5 +349,19 @@ class _ScheduleCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> setReminder(BuildContext context, Reminder newReminder) async {
+    final updatedReminder = await Navigator.pushNamed(
+        context, Routes.addReminder,
+        arguments: newReminder);
+
+    if (updatedReminder != null && updatedReminder is Reminder) {
+      reminders.value = [...reminders.value, updatedReminder];
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Reminder set for ${updatedReminder.scheduledTime}')),
+      );
+    }
   }
 }
