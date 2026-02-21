@@ -4,6 +4,7 @@ import '../../models/patient.dart';
 import 'widgets/patient_card.dart';
 import '../../models/appointment.dart';
 import '../../models/patient_note.dart';
+import '../../models/medication_log.dart';
 import 'package:uuid/uuid.dart';
 
 class ProfessionalPatientsScreen extends StatefulWidget {
@@ -48,6 +49,25 @@ class _ProfessionalPatientsScreenState
           date: DateTime.now().subtract(const Duration(days: 2)),
         ),
       ],
+      medicationLogs: [
+        MedicationLog(
+          medicationName: 'Lisinopril',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 1, hours: 2)),
+          takenTime: DateTime.now().subtract(const Duration(days: 1, hours: 2)),
+          status: 'Taken',
+        ),
+        MedicationLog(
+          medicationName: 'Lisinopril',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 2, hours: 2)),
+          takenTime: DateTime.now().subtract(const Duration(days: 2, hours: 1)),
+          status: 'Taken',
+        ),
+        MedicationLog(
+          medicationName: 'Lisinopril',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 3, hours: 2)),
+          status: 'Skipped',
+        ),
+      ],
     ),
     Patient(
       id: 'P002',
@@ -58,6 +78,29 @@ class _ProfessionalPatientsScreenState
       status: 'Recovering',
       lastVisit: DateTime.now().subtract(const Duration(days: 5)),
       phoneNumber: '+91 87654 32109',
+      medicationLogs: [
+        MedicationLog(
+          medicationName: 'Metformin',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 1)),
+          takenTime: DateTime.now().subtract(const Duration(days: 1)),
+          status: 'Taken',
+        ),
+        MedicationLog(
+          medicationName: 'Metformin',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 2)),
+          status: 'Skipped',
+        ),
+        MedicationLog(
+          medicationName: 'Metformin',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 3)),
+          status: 'Skipped',
+        ),
+        MedicationLog(
+          medicationName: 'Metformin',
+          scheduledTime: DateTime.now().subtract(const Duration(days: 4)),
+          status: 'Skipped',
+        ),
+      ],
     ),
     Patient(
       id: 'P003',

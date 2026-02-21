@@ -335,6 +335,20 @@ class _ReminderCardState extends State<_ReminderCard> {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      _showLogIntakeDialog(context, widget.reminder);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: typeColor,
+                      foregroundColor: Colors.white,
+                    ),
+                    icon: const Icon(Icons.check_circle_outline, size: 16),
+                    label: const Text('Log'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
                       showDialog(
@@ -367,6 +381,7 @@ class _ReminderCardState extends State<_ReminderCard> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.red,
                       side: const BorderSide(color: Colors.red),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                     ),
                     icon: const Icon(Icons.delete_rounded, size: 16),
                     label: const Text('Delete'),
@@ -377,6 +392,77 @@ class _ReminderCardState extends State<_ReminderCard> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showLogIntakeDialog(BuildContext context, Reminder reminder) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Log Medication Intake',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Did ${reminder.patient} take ${reminder.medication} today at ${reminder.scheduledTime}?',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Logged as Taken')),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        icon: const Icon(Icons.check_circle),
+                        label: const Text('Taken'),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Logged as Skipped')),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        icon: const Icon(Icons.cancel),
+                        label: const Text('Skipped'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
