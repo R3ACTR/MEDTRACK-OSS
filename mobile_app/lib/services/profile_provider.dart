@@ -6,18 +6,32 @@ class ProfileProvider with ChangeNotifier {
   // Mock data for caregivers
   final List<Dependent> _profiles = [
     Dependent(
-      id: 'D001', 
-      name: 'Rajesh Kumar', 
+      id: 'D001',
+      name: 'Rajesh Kumar',
       relation: 'Self',
-      emergencyProfile: EmergencyProfile(bloodType: 'O+', allergies: ['Penicillin', 'Peanuts'], emergencyContactName: 'Priya Sharma', emergencyContactPhone: '+91 87654 32109'),
+      emergencyProfile: EmergencyProfile(
+          bloodType: 'O+',
+          allergies: ['Penicillin', 'Peanuts'],
+          emergencyContactName: 'Priya Sharma',
+          emergencyContactPhone: '+91 87654 32109'),
+      primaryCaregiverId: 'D002', // Son is primary caregiver
     ),
     Dependent(
-      id: 'D002', 
-      name: 'Aarav Kumar', 
+      id: 'D002',
+      name: 'Aarav Kumar',
       relation: 'Son',
-      emergencyProfile: EmergencyProfile(bloodType: 'A-', allergies: ['Latex'], emergencyContactName: 'Rajesh Kumar', emergencyContactPhone: '+91 98765 43210'),
+      emergencyProfile: EmergencyProfile(
+          bloodType: 'A-',
+          allergies: ['Latex'],
+          emergencyContactName: 'Rajesh Kumar',
+          emergencyContactPhone: '+91 98765 43210'),
+      primaryCaregiverId: "D001", // father is primary caregiver
     ),
-    Dependent(id: 'D003', name: 'Meera Devi', relation: 'Mother'), // Intentionally has no emergency profile for testing
+    Dependent(
+        id: 'D003',
+        name: 'Meera Devi',
+        relation:
+            'Mother'), // Intentionally has no emergency profile for testing
   ];
 
   Dependent? _activeProfile;

@@ -7,6 +7,7 @@ class Dependent {
   final String relation;
   final EmergencyProfile? emergencyProfile;
   final List<AuditLogEntry> activityFeed;
+  final String primaryCaregiverId;
 
   Dependent({
     required this.id,
@@ -14,6 +15,7 @@ class Dependent {
     required this.relation,
     this.emergencyProfile,
     this.activityFeed = const [],
+    this.primaryCaregiverId = '-1',
   });
 
   factory Dependent.fromJson(Map<String, dynamic> json) {
@@ -21,13 +23,14 @@ class Dependent {
       id: json['id'] as String,
       name: json['name'] as String,
       relation: json['relation'] as String,
-      emergencyProfile: json['emergencyProfile'] != null 
-          ? EmergencyProfile.fromJson(json['emergencyProfile']) 
+      emergencyProfile: json['emergencyProfile'] != null
+          ? EmergencyProfile.fromJson(json['emergencyProfile'])
           : null,
       activityFeed: (json['activityFeed'] as List<dynamic>?)
               ?.map((e) => AuditLogEntry.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      primaryCaregiverId: json['primaryCaregiverId'] as String? ?? '-1',
     );
   }
 
@@ -38,6 +41,7 @@ class Dependent {
       'relation': relation,
       'emergencyProfile': emergencyProfile?.toJson(),
       'activityFeed': activityFeed.map((e) => e.toJson()).toList(),
+      'primaryCaregiverId': primaryCaregiverId,
     };
   }
 }
