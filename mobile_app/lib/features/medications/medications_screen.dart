@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/routes.dart';
 
+import 'package:mobile_app/routes.dart';
 import '../../models/medication.dart';
+import 'package:provider/provider.dart';
+import '../../services/profile_provider.dart';
 
 class MedicationsScreen extends StatefulWidget {
   const MedicationsScreen({super.key});
@@ -117,16 +120,39 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
           ),
           // Medications List
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: filteredMeds.length,
-              itemBuilder: (context, index) {
-                final medication = filteredMeds[index];
-                return _MedicationCard(
-                  medication: medication,
-                  onEdit: () => _editMedication(context, medication),
+            child: Consumer<ProfileProvider>(
+              builder: (context, profileProvider, child) {
+                final activeProfileId = profileProvider.activeProfile?.id;
+                
+                // Mock filtering logic for medications
+                final profileMeds = filteredMeds.where((m) {
+                   bool matchesProfile = false;
+                   if (activeProfileId == 'D001' && (m.id == 1 || m.id == 2)) matchesProfile = true;
+                   if (activeProfileId == 'D002' && m.id == 3) matchesProfile = true;
+                   if (activeProfileId == 'D003' && m.id == 4) matchesProfile = true;
+                   
+                   if ([1, 2, 3, 4].contains(m.id) == false) {
+                      matchesProfile = true;
+                   }
+                   return matchesProfile;
+                }).toList();
+                
+                if (profileMeds.isEmpty) {
+                   return const Center(child: Text("No medications found for this dependent."));
+                }
+                
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: profileMeds.length,
+                  itemBuilder: (context, index) {
+                    final medication = profileMeds[index];
+                    return _MedicationCard(
+                      medication: medication,
+                      onEdit: () => _editMedication(context, medication),
+                    );
+                  },
                 );
-              },
+              }
             ),
           ),
         ],

@@ -6,6 +6,8 @@ import '../../../models/appointment.dart';
 import '../../../models/patient_note.dart';
 import '../../../models/medication_log.dart';
 import '../../../models/goal.dart';
+import '../../../models/symptom_log.dart';
+import 'add_symptom_view.dart';
 
 class PatientDetailsView extends StatefulWidget {
   final Patient patient;
@@ -85,6 +87,8 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
               _buildRecoveryGoals(context),
               const SizedBox(height: 16),
               _buildMedicationAdherence(context),
+              const SizedBox(height: 16),
+              _buildSymptomLogs(context),
               const SizedBox(height: 16),
               _buildMedicalHistory(context),
             ],
@@ -306,25 +310,49 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
               );
             }
           }),
-          _buildActionButton(context, Icons.note_add, 'Add Note', Colors.orange,
-              onTap: () async {
-            final result = await Navigator.pushNamed(
-              context,
-              Routes.addPatientNote,
-              arguments: _currentPatient,
-            );
-
-            if (result != null && result is PatientNote) {
-              setState(() {
-                _currentPatient.notes.add(result);
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Note added successfully')),
+            _buildActionButton(context, Icons.sick, 'Symptom', Colors.redAccent,
+                onTap: () async {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                builder: (BuildContext context) {
+                  return AddSymptomView(
+                    patientId: _currentPatient.id,
+                    onSave: (symptomData) {
+                      final newLog = SymptomLog.fromJson(symptomData);
+                      setState(() {
+                        _currentPatient.symptomLogs.add(newLog);
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Symptom logged successfully')),
+                      );
+                    },
+                  );
+                },
               );
-            }
-          }),
-        ],
-      ),
+            }),
+            _buildActionButton(context, Icons.note_add, 'Add Note', Colors.orange,
+                onTap: () async {
+              final result = await Navigator.pushNamed(
+                context,
+                Routes.addPatientNote,
+                arguments: _currentPatient,
+              );
+
+              if (result != null && result is PatientNote) {
+                setState(() {
+                  _currentPatient.notes.add(result);
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Note added successfully')),
+                );
+              }
+            }),
+          ],
+        ),
     );
   }
 
@@ -532,6 +560,106 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSymptomLogs(BuildContext context) {
+    if (_currentPatient.symptomLogs.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Symptom Tracker',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey[200]!),
+              ),
+              child: Column(
+                children: [
+                   Icon(Icons.monitor_heart_outlined, size: 48, color: Colors.grey[400]),
+                   const SizedBox(height: 12),
+                   Text(
+                     'No symptoms logged',
+                     style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.w500),
+                   ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Recent Symptoms',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '${_currentPatient.symptomLogs.length} logs',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: Colors.redAccent,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ..._currentPatient.symptomLogs.reversed.take(5).map((log) {
+            Color severityColor = Colors.green;
+            if (log.severity >= 8) {
+              severityColor = Colors.red;
+            } else if (log.severity >= 4) {
+              severityColor = Colors.orange;
+            }
+
+            final parsedDate = DateTime.parse(log.date);
+
+            return Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: severityColor.withOpacity(0.1),
+                  child: Text(
+                    log.severity.toString(),
+                    style: TextStyle(color: severityColor, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                title: Text(log.symptomName, style: const TextStyle(fontWeight: FontWeight.w600)),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${parsedDate.day}/${parsedDate.month} • ${parsedDate.hour}:${parsedDate.minute.toString().padLeft(2, '0')}'),
+                    if (log.notes.isNotEmpty)
+                       Padding(
+                         padding: const EdgeInsets.only(top: 4),
+                         child: Text(log.notes, style: const TextStyle(fontStyle: FontStyle.italic)),
+                       ),
+                  ],
+                ),
+                isThreeLine: log.notes.isNotEmpty,
               ),
             );
           }),
