@@ -340,8 +340,6 @@ class _ReminderCardState extends State<_ReminderCard> {
                     Expanded(
                       child: Text(
                         '${widget.reminder.notificationCount} notification${widget.reminder.notificationCount > 1 ? 's' : ''} before the reminder',
-                        style: TextStyle(fontSize: 12, color: Colors.black54),
-                        '${_currentReminder.notificationCount} notification${_currentReminder.notificationCount > 1 ? 's' : ''} before the reminder',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.black54,
