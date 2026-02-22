@@ -339,7 +339,7 @@ class _ReminderCardState extends State<_ReminderCard> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        '${widget.reminder.notificationCount} notification${widget.reminder.notificationCount > 1 ? 's' : ''} before the reminder',
+                        '${_currentReminder.notificationCount} notification${_currentReminder.notificationCount > 1 ? 's' : ''} before the reminder',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.black54,
@@ -365,7 +365,7 @@ class _ReminderCardState extends State<_ReminderCard> {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      _showLogIntakeDialog(context, widget.reminder);
+                      _showLogIntakeDialog(context, _currentReminder);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: typeColor,
