@@ -348,19 +348,6 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                     hintText: 'Enter purpose',
                   ),
                 ),
-                SizedBox(height: 16),
-                TextFormField(
-                  initialValue: widget.existingMedication?.icon,
-                  onSaved: (newValue) => medication.icon = newValue ?? '',
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    hintText: 'Enter an Icon',
-                  ),
-                ),
                 SizedBox(height: 32),
                 Container(
                   padding: const EdgeInsets.all(16),
