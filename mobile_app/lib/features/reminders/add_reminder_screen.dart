@@ -5,9 +5,6 @@ import '../../models/reminder.dart';
 class AddReminderScreen extends StatefulWidget {
   final Reminder? reminderToEdit;
   const AddReminderScreen({super.key, this.reminderToEdit});
-  final Reminder? existingReminder;
-
-  const AddReminderScreen({super.key, this.existingReminder});
   static const String route = '/add_reminder';
 
   @override
