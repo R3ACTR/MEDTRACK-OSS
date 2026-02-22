@@ -55,8 +55,14 @@ class NotificationService {
       ticker: 'ticker',
     );
 
-    const NotificationDetails notificationDetails =
-        NotificationDetails(android: androidNotificationDetails);
+    // iOS/Darwin settings
+    const DarwinNotificationDetails iOSNotificationDetails =
+        DarwinNotificationDetails();
+
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+      iOS: iOSNotificationDetails,
+    );
 
     await _plugin.show(
       id: DateTime.now().millisecondsSinceEpoch &
