@@ -68,7 +68,7 @@ class RemindersScreen extends StatefulWidget {
 class _RemindersScreenState extends State<RemindersScreen> {
   void _deleteReminder(int id) {
     setState(() {
-      reminders.removeWhere((r) => r.id == id);
+      reminders.value.removeWhere((r) => r.id == id);
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Reminder deleted')),
@@ -85,9 +85,9 @@ class _RemindersScreenState extends State<RemindersScreen> {
 
     if (result != null && result is Reminder) {
       setState(() {
-        final index = reminders.indexWhere((r) => r.id == reminder.id);
+        final index = reminders.value.indexWhere((r) => r.id == reminder.id);
         if (index != -1) {
-          reminders[index] = result;
+          reminders.value[index] = result;
         }
       });
       ScaffoldMessenger.of(context).showSnackBar(
@@ -115,7 +115,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
         ],
       ),
       body:
-          reminders.isEmpty
+          reminders.value.isEmpty
               ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
