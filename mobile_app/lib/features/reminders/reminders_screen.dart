@@ -148,6 +148,8 @@ class _RemindersScreenState extends State<RemindersScreen> {
                     final reminder = reminders.value[index]; // Added .value
                     return _ReminderCard(
                       reminder: reminder,
+                      onDelete: () => _deleteReminder(reminder.id),
+                      onEdit: () => _editReminder(reminder),
                       onUpdate: (updatedItem) {
                         setState(() {
                           reminders.value[index] = updatedItem;
