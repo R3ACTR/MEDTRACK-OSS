@@ -152,7 +152,8 @@ class _RemindersScreenState extends State<RemindersScreen> {
                       onEdit: () => _editReminder(reminder),
                       onUpdate: (updatedItem) {
                         setState(() {
-                          reminders.value[index] = updatedItem;
+                          reminders.value = [...reminders.value]..[index] =
+                              updatedItem;
                         });
                       },
                     );
