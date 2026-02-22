@@ -42,6 +42,19 @@ class NotificationService {
 
     // Request permissions for Android 13+
     await androidImpl?.requestNotificationsPermission();
+    // Request permissions for iOS/Darwin
+    await requestPermissions();
+  }
+
+  // Request notification permissions for iOS/Darwin
+  Future<void> requestPermissions() async {
+    final iOSImpl = _plugin.resolvePlatformSpecificImplementation<
+        IOSFlutterLocalNotificationsPlugin>();
+    await iOSImpl?.requestPermissions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
   }
 
   Future<void> showTestNotification(String medication, String patient) async {
