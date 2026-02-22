@@ -142,9 +142,9 @@ class _RemindersScreenState extends State<RemindersScreen> {
                   horizontal: 16,
                   vertical: 12,
                 ),
-                itemCount: reminders.length,
+                itemCount: reminders.value.length,
                 itemBuilder: (context, index) {
-                  final reminder = reminders[index];
+                  final reminder = reminders.value[index];
                   return _ReminderCard(
                     reminder: reminder,
                     onDelete: () => _deleteReminder(reminder.id),
