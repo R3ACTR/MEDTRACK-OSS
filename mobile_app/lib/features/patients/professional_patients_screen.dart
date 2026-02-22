@@ -4,8 +4,6 @@ import '../../models/patient.dart';
 import 'widgets/patient_card.dart';
 import '../../models/appointment.dart';
 import '../../models/patient_note.dart';
-import '../../models/medication_log.dart';
-import '../../models/goal.dart';
 import 'package:uuid/uuid.dart';
 
 class ProfessionalPatientsScreen extends StatefulWidget {
@@ -50,39 +48,6 @@ class _ProfessionalPatientsScreenState
           date: DateTime.now().subtract(const Duration(days: 2)),
         ),
       ],
-      medicationLogs: [
-        MedicationLog(
-          medicationName: 'Lisinopril',
-          scheduledTime: DateTime.now().subtract(const Duration(days: 1, hours: 2)),
-          takenTime: DateTime.now().subtract(const Duration(days: 1, hours: 2)),
-          status: 'Taken',
-        ),
-        MedicationLog(
-          medicationName: 'Lisinopril',
-          scheduledTime: DateTime.now().subtract(const Duration(days: 2, hours: 2)),
-          takenTime: DateTime.now().subtract(const Duration(days: 2, hours: 1)),
-          status: 'Taken',
-        ),
-        MedicationLog(
-          medicationName: 'Lisinopril',
-          scheduledTime: DateTime.now().subtract(const Duration(days: 3, hours: 2)),
-          status: 'Skipped',
-        ),
-      ],
-      goals: [
-        Goal(
-          title: 'Lower Blood Pressure',
-          description: 'Achieve a consistent BP reading below 130/80.',
-          targetDate: DateTime.now().add(const Duration(days: 30)),
-          badgeIcon: '🫀',
-          milestones: [
-            Milestone(title: 'Take Lisinopril consistently for 7 days', isCompleted: true),
-            Milestone(title: 'Reduce sodium intake', isCompleted: true),
-            Milestone(title: 'Log two readings below 135/85', isCompleted: false),
-            Milestone(title: 'Attend follow-up appointment', isCompleted: false),
-          ],
-        ),
-      ],
     ),
     Patient(
       id: 'P002',
@@ -93,42 +58,6 @@ class _ProfessionalPatientsScreenState
       status: 'Recovering',
       lastVisit: DateTime.now().subtract(const Duration(days: 5)),
       phoneNumber: '+91 87654 32109',
-      medicationLogs: [
-        MedicationLog(
-          medicationName: 'Metformin',
-          scheduledTime: DateTime.now().subtract(const Duration(days: 1)),
-          takenTime: DateTime.now().subtract(const Duration(days: 1)),
-          status: 'Taken',
-        ),
-        MedicationLog(
-          medicationName: 'Metformin',
-          scheduledTime: DateTime.now().subtract(const Duration(days: 2)),
-          status: 'Skipped',
-        ),
-        MedicationLog(
-          medicationName: 'Metformin',
-          scheduledTime: DateTime.now().subtract(const Duration(days: 3)),
-          status: 'Skipped',
-        ),
-        MedicationLog(
-          medicationName: 'Metformin',
-          scheduledTime: DateTime.now().subtract(const Duration(days: 4)),
-          status: 'Skipped',
-        ),
-      ],
-      goals: [
-        Goal(
-          title: 'Improve Blood Sugar Levels',
-          description: 'Maintain healthy fasting blood sugar for two weeks.',
-          targetDate: DateTime.now().subtract(const Duration(days: 1)),
-          badgeIcon: '🏆',
-          milestones: [
-            Milestone(title: 'Complete 2 weeks of diet journal', isCompleted: true),
-            Milestone(title: 'Walk 30 minutes daily', isCompleted: true),
-            Milestone(title: 'Fasting glucose below 100 mg/dL', isCompleted: true),
-          ],
-        ),
-      ],
     ),
     Patient(
       id: 'P003',
@@ -163,7 +92,7 @@ class _ProfessionalPatientsScreenState
   ];
 
   String _searchQuery = '';
-  String _quickFilter = 'All';
+  String _statusFilter = 'All';
   String? _selectedGender;
   String? _selectedCondition;
   String _sortBy = 'Name';
@@ -175,29 +104,16 @@ class _ProfessionalPatientsScreenState
 
   List<Patient> get _filteredPatients {
     var filtered = _patients.where((p) {
-      final searchLower = _searchQuery.toLowerCase();
-      final matchesQuery = p.name.toLowerCase().contains(searchLower) ||
-          p.condition.toLowerCase().contains(searchLower) ||
-          p.id.toLowerCase().contains(searchLower) ||
-          p.phoneNumber.toLowerCase().contains(searchLower);
-          
-      bool matchesQuickFilter = true;
-      final now = DateTime.now();
-      if (_quickFilter == 'Requires Attention') {
-        matchesQuickFilter = p.status == 'Critical';
-      } else if (_quickFilter == 'Upcoming Appointments') {
-        matchesQuickFilter = p.appointments.any((a) {
-          final date = a.date;
-          return date.isAfter(now) || (date.year == now.year && date.month == now.month && date.day == now.day);
-        });
-      } else if (_quickFilter == 'Recent Activity') {
-        matchesQuickFilter = p.lastVisit.isAfter(now.subtract(const Duration(days: 7)));
-      }
+      final matchesQuery =
+          p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+              p.condition.toLowerCase().contains(_searchQuery.toLowerCase());
+      final matchesStatus = _statusFilter == 'All' || p.status == _statusFilter;
+      final matchesGender =
+          _selectedGender == null || p.gender == _selectedGender;
+      final matchesCondition =
+          _selectedCondition == null || p.condition == _selectedCondition;
 
-      final matchesGender = _selectedGender == null || p.gender == _selectedGender;
-      final matchesCondition = _selectedCondition == null || p.condition == _selectedCondition;
-      
-      return matchesQuery && matchesQuickFilter && matchesGender && matchesCondition;
+      return matchesQuery && matchesStatus && matchesGender && matchesCondition;
     }).toList();
 
     switch (_sortBy) {
@@ -215,7 +131,12 @@ class _ProfessionalPatientsScreenState
     return filtered;
   }
 
-  final List<String> _quickFilterOptions = ['All', 'Requires Attention', 'Upcoming Appointments', 'Recent Activity'];
+  final List<String> _statusOptions = [
+    'All',
+    'Stable',
+    'Recovering',
+    'Critical'
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -283,7 +204,7 @@ class _ProfessionalPatientsScreenState
       child: TextField(
         onChanged: (value) => setState(() => _searchQuery = value),
         decoration: InputDecoration(
-          hintText: 'Search by name, ID, condition...',
+          hintText: 'Search patients, conditions...',
           prefixIcon: const Icon(Icons.search),
           filled: true,
           fillColor: Colors.white,
@@ -340,19 +261,15 @@ class _ProfessionalPatientsScreenState
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        children: _quickFilterOptions.map((filter) {
-          final selected = _quickFilter == filter;
+        children: _statusOptions.map((status) {
+          final selected = _statusFilter == status;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ChoiceChip(
-              label: Text(filter),
+              label: Text(status),
               selected: selected,
-              onSelected: (_) => setState(() => _quickFilter = filter),
+              onSelected: (_) => setState(() => _statusFilter = status),
               selectedColor: Colors.blueAccent,
-              labelStyle: TextStyle(
-                color: selected ? Colors.white : Colors.black87,
-                fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-              ),
             ),
           );
         }).toList(),
