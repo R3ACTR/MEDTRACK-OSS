@@ -26,7 +26,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.reminderToEdit != null) {
+    if (isEditing) {
       final reminder = widget.reminderToEdit!;
       _medicationName = reminder.medication;
       _patientName = reminder.patient;
@@ -51,13 +51,6 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       return TimeOfDay(hour: hour, minute: minute);
     } catch (e) {
       return TimeOfDay.now();
-    if (isEditing) {
-      final reminder = widget.reminderToEdit!;
-      _medicationName = reminder.medication;
-      _patientName = reminder.patient;
-      _scheduledTime = TimeOfDay.now();
-      _selectedType = reminder.type;
-      _notificationCount = reminder.notificationCount;
     }
   }
 
