@@ -381,6 +381,12 @@ class _ScheduleCard extends StatelessWidget {
                                       6
                                   ? 'Afternoon'
                                   : 'Evening';
+                          final timeMatch =
+                              RegExp(r'\d{1,2}:\d{2}\s?[APap][Mm]')
+                                  .firstMatch(schedule.time);
+                          final String scheduledTime = timeMatch != null
+                              ? timeMatch.group(0)!
+                              : schedule.time;
                           final newReminder = Reminder(
                             id: DateTime.now()
                                 .millisecondsSinceEpoch
@@ -393,7 +399,7 @@ class _ScheduleCard extends StatelessWidget {
                             notificationCount: 0,
                             icon: schedule.icon,
                             remindAt: DateFormat("hh:mm a")
-                                .parse(schedule.time)
+                                .parse(scheduledTime)
                                 .add(const Duration(minutes: -15)),
                           );
                           setReminder(context, newReminder);
