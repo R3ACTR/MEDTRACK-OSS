@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/patient.dart';
 import 'package:mobile_app/navigation/widgets/main_screen.dart';
 import 'package:mobile_app/features/home/home_screen.dart';
 import 'package:mobile_app/features/medications/add_medication_screen.dart';
@@ -46,8 +47,8 @@ Map<String, WidgetBuilder> getRoutes() {
     Routes.emergencyPassport: (context) => const EmergencyPassportScreen(),
     Routes.activityFeed: (context) => const ActivityFeedScreen(),
     Routes.consultReport: (context) {
-       final args = ModalRoute.of(context)!.settings.arguments as Patient;
-       return ConsultReportScreen(patient: args);
+      final args = ModalRoute.of(context)!.settings.arguments as Patient;
+      return ConsultReportScreen(patient: args);
     },
   };
 }

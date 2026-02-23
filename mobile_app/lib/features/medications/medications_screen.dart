@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/dependent.dart';
 import 'package:mobile_app/routes.dart';
 import '../../models/medication.dart';
-import '../../models/medication_log.dart';
 import '../../models/audit_log_entry.dart';
 import 'package:provider/provider.dart';
 import '../../services/profile_provider.dart';
@@ -121,80 +121,95 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
           // Medications List
           Expanded(
             child: Consumer<ProfileProvider>(
-              builder: (context, profileProvider, child) {
-                final activeProfileId = profileProvider.activeProfile?.id;
-                
-                // Mock filtering logic for medications
-                final profileMeds = filteredMeds.where((m) {
-                   bool matchesProfile = false;
-                   if (activeProfileId == 'D001' && (m.id == 1 || m.id == 2)) matchesProfile = true;
-                   if (activeProfileId == 'D002' && m.id == 3) matchesProfile = true;
-                   if (activeProfileId == 'D003' && m.id == 4) matchesProfile = true;
-                   
-                   if ([1, 2, 3, 4].contains(m.id) == false) {
-                      matchesProfile = true;
-                   }
-                   return matchesProfile;
-                }).toList();
-                
-                if (profileMeds.isEmpty) {
-                   return const Center(child: Text("No medications found for this dependent."));
+                builder: (context, profileProvider, child) {
+              final activeProfileId = profileProvider.activeProfile?.id;
+
+              // Mock filtering logic for medications
+              final profileMeds = filteredMeds.where((m) {
+                bool matchesProfile = false;
+                if (activeProfileId == 'D001' && (m.id == 1 || m.id == 2))
+                  matchesProfile = true;
+                if (activeProfileId == 'D002' && m.id == 3)
+                  matchesProfile = true;
+                if (activeProfileId == 'D003' && m.id == 4)
+                  matchesProfile = true;
+
+                if ([1, 2, 3, 4].contains(m.id) == false) {
+                  matchesProfile = true;
                 }
-                
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  itemCount: profileMeds.length,
-                  itemBuilder: (context, index) {
-                    final medication = profileMeds[index];
-                    return _MedicationCard(
-                  medication: medication,
-                  profileProvider: profileProvider,
-                  onEdit: () => _editMedication(context, medication),
-                  onTakeDose: () {
-                    setState(() {
-                      if (medication.pillsRemaining > 0) {
-                        medication.pillsRemaining--;
-                        
-                        // Create Audit Log
-                        final caregiverName = profileProvider.primaryCaregiver?.name ?? "Primary Caregiver";
-                        final aLog = AuditLogEntry(
-                           id: DateTime.now().millisecondsSinceEpoch.toString(),
-                           timestamp: DateTime.now(),
-                           action: "Administered ${medication.dosage} of ${medication.name}",
-                           caregiverName: caregiverName,
-                           type: "medication"
-                        );
+                return matchesProfile;
+              }).toList();
+
+              if (profileMeds.isEmpty) {
+                return const Center(
+                    child: Text("No medications found for this dependent."));
+              }
+
+              return ListView.builder(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                itemCount: profileMeds.length,
+                itemBuilder: (context, index) {
+                  final medication = profileMeds[index];
+                  return _MedicationCard(
+                    medication: medication,
+                    profileProvider: profileProvider,
+                    onEdit: () => _editMedication(context, medication),
+                    onTakeDose: () {
+                      setState(() {
+                        if (medication.pillsRemaining > 0) {
+                          medication.pillsRemaining--;
+
+                          // Create Audit Log
+                          final primaryCaregiverId =
+                              profileProvider.activeProfile?.primaryCaregiverId;
+                          final primaryCaregiver = profileProvider.profiles
+                              .firstWhere((p) => p.id == primaryCaregiverId,
+                                  orElse: () => Dependent(
+                                      id: '-1',
+                                      name: 'Primary Caregiver',
+                                      relation: 'Caregiver'));
+                          final caregiverName = primaryCaregiver.name;
+                          final aLog = AuditLogEntry(
+                              id: DateTime.now()
+                                  .millisecondsSinceEpoch
+                                  .toString(),
+                              timestamp: DateTime.now(),
+                              action:
+                                  "Administered ${medication.dosage} of ${medication.name}",
+                              caregiverName: caregiverName,
+                              type: "medication");
 
                         // Attach to active dependent profile 
                         if (profileProvider.activeProfile != null) {
                            profileProvider.activeProfile!.activityFeed.add(aLog);
                         }
 
-                        // Show a quick snackbar confirmation
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Dose taken. ${medication.pillsRemaining} pills remaining."),
-                            duration: const Duration(seconds: 2),
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                      } else {
-                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Cannot take dose: Out of pills!"),
-                            duration: Duration(seconds: 2),
-                            backgroundColor: Colors.red,
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                      }
-                    });
-                  },
-                );
-                  },
-                );
-              }
-            ),
+                          // Show a quick snackbar confirmation
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  "Dose taken. ${medication.pillsRemaining} pills remaining."),
+                              duration: const Duration(seconds: 2),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Cannot take dose: Out of pills!"),
+                              duration: Duration(seconds: 2),
+                              backgroundColor: Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
+                      });
+                    },
+                  );
+                },
+              );
+            }),
           ),
         ],
       ),
