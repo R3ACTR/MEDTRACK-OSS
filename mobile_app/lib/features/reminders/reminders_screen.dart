@@ -395,7 +395,6 @@ class _ReminderCard extends StatelessWidget {
                   icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
                   style: IconButton.styleFrom(
                     padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
                   ),
                 ),
               ],
