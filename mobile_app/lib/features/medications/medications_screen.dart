@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/routes.dart';
 
 import '../../models/medication.dart';
+import 'package:mobile_app/features/medications/widgets/medication_card.dart';
+import 'package:mobile_app/features/medications/widgets/medication_error_boundary.dart';
+import 'package:mobile_app/features/medications/widgets/medication_skeleton.dart';
 
 class MedicationsScreen extends StatefulWidget {
   const MedicationsScreen({super.key});
@@ -65,6 +68,30 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
   ];
 
   String _filterValue = 'All';
+  bool _isLoading = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMedications();
+  }
+
+  Future<void> _fetchMedications() async {
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
+    
+    // Simulate network delay for skeleton loading
+    await Future.delayed(const Duration(milliseconds: 1500));
+    
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,16 +144,26 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
           ),
           // Medications List
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: filteredMeds.length,
-              itemBuilder: (context, index) {
-                final medication = filteredMeds[index];
-                return _MedicationCard(
-                  medication: medication,
-                  onEdit: () => _editMedication(context, medication),
-                );
-              },
+            child: MedicationErrorBoundary(
+              hasError: _hasError,
+              onRetry: _fetchMedications,
+              child: _isLoading
+                  ? ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      itemCount: 4,
+                      itemBuilder: (context, index) => const MedicationSkeleton(),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      itemCount: filteredMeds.length,
+                      itemBuilder: (context, index) {
+                        final medication = filteredMeds[index];
+                        return MedicationCard(
+                          medication: medication,
+                          onEdit: () => _editMedication(context, medication),
+                        );
+                      },
+                    ),
             ),
           ),
         ],
@@ -206,166 +243,4 @@ class _FilterChip extends StatelessWidget {
   }
 }
 
-class _MedicationCard extends StatelessWidget {
-  final Medication medication;
-  final VoidCallback onEdit;
 
-  const _MedicationCard({required this.medication, required this.onEdit});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: medication.isActive
-                ? medication.color.withOpacity(0.2)
-                : Colors.grey[200]!,
-          ),
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                // Icon
-                Container(
-                  decoration: BoxDecoration(
-                    color: medication.color.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    medication.icon,
-                    style: const TextStyle(fontSize: 28),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                // Medication Info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              medication.name,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: medication.isActive
-                                  ? const Color(0xFF4CAF50).withOpacity(0.1)
-                                  : Colors.grey[200],
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
-                            child: Text(
-                              medication.isActive ? 'Active' : 'Inactive',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: medication.isActive
-                                    ? const Color(0xFF4CAF50)
-                                    : Colors.black54,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        medication.dosage,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        medication.frequency,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline_rounded,
-                    size: 16,
-                    color: Colors.black54,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      medication.purpose,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.schedule_rounded,
-                        size: 16,
-                        color: medication.color,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Next: ${medication.nextDue}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: medication.color,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                OutlinedButton.icon(
-                  onPressed: onEdit,
-                  icon: const Icon(Icons.edit_rounded, size: 16),
-                  label: const Text('Edit'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
