@@ -13,6 +13,8 @@ class AuditLogEntry {
     required this.type,
   });
 
+  static List<AuditLogEntry> emptyList() => [];
+
   factory AuditLogEntry.fromJson(Map<String, dynamic> json) {
     return AuditLogEntry(
       id: json['id'] as String,
