@@ -9,7 +9,7 @@ class PatientFilter extends StatefulWidget {
 
 class _PatientFilterState extends State<PatientFilter> {
   String _selectedStatus = 'All';
-  List<String> Options = ['All', 'Stable', 'Critical', 'Recovering'];
+  List<String> options = ['All', 'Stable', 'Critical', 'Recovering'];
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -18,15 +18,14 @@ class _PatientFilterState extends State<PatientFilter> {
         SizedBox(
           height: 220,
           child: ListView.builder(
-            itemCount: Options.length,
+            itemCount: options.length,
             itemBuilder: (context, index) {
               return ListTile(
-                title: Text(Options[index]),
-                selected: _selectedStatus == Options[index],
-
+                title: Text(options[index]),
+                selected: _selectedStatus == options[index],
                 onTap: () {
                   setState(() {
-                    _selectedStatus = Options[index];
+                    _selectedStatus = options[index];
                     Navigator.pop(context, _selectedStatus);
                   });
                 },
