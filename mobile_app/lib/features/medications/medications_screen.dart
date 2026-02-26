@@ -73,8 +73,17 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
   ];
 
   String _filterValue = 'All';
+  String _searchQuery = '';
   bool _isLoading = false;
   bool _hasError = false;
+  
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   void _fetchMedications() {
     setState(() {
@@ -100,11 +109,20 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredMeds = _filterValue == 'All'
+    var filteredMeds = _filterValue == 'All'
         ? medications
         : _filterValue == 'Active'
             ? medications.where((m) => m.isActive).toList()
             : medications.where((m) => !m.isActive).toList();
+
+    if (_searchQuery.isNotEmpty) {
+      final q = _searchQuery.toLowerCase();
+      filteredMeds = filteredMeds.where((m) => 
+        m.name.toLowerCase().contains(q) || 
+        m.dosage.toLowerCase().contains(q) || 
+        m.purpose.toLowerCase().contains(q)
+      ).toList();
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -113,6 +131,44 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
       ),
       body: Column(
         children: [
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search medications...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {
+                            _searchQuery = '';
+                          });
+                        },
+                      )
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                filled: true,
+                fillColor: Colors.grey[50],
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
+            ),
+          ),
           // Filter Chips
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
