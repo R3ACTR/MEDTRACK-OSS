@@ -16,7 +16,7 @@ class MedicationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Accessibility: Ensure high contrast for critical states
-    bool isLowInventory = medication.pillsRemaining <= 5;
+    bool isLowInventory = medication.pillsRemaining < 10;
     bool needsDoctorAuth = isLowInventory && (medication.refillsRemaining == null || medication.refillsRemaining == 0);
 
     return Card(
@@ -44,15 +44,22 @@ class MedicationCard extends StatelessWidget {
             Row(
               children: [
                 // Icon with high contrast backing
-                Container(
-                  decoration: BoxDecoration(
-                    color: medication.color.withOpacity(0.25),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    medication.icon,
-                    style: const TextStyle(fontSize: 28),
+                Badge(
+                  isLabelVisible: isLowInventory,
+                  backgroundColor: const Color(0xFFD32F2F),
+                  alignment: Alignment.topRight,
+                  offset: const Offset(4, -4),
+                  label: const Icon(Icons.warning, size: 12, color: Colors.white),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: medication.color.withOpacity(0.25),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      medication.icon,
+                      style: const TextStyle(fontSize: 28),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),

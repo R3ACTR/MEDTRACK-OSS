@@ -259,6 +259,18 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
           medications[index] = updatedMedication;
         }
       });
+    } else if (updatedMedication == 'delete') {
+      setState(() {
+        medications.removeWhere((m) => m.id == medicationToEdit.id);
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${medicationToEdit.name} deleted successfully'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
 }

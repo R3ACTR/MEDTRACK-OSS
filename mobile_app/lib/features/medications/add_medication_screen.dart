@@ -99,11 +99,46 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
     _pillsController.text = medication.pillsRemaining.toString();
   }
 
+  Future<void> _confirmDelete() async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Medication'),
+          content: const Text('Are you sure you want to delete this medication?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true && mounted) {
+      Navigator.pop(context, 'delete');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditMode ? 'Edit Medication' : 'Add Medication'),
+        actions: [
+          if (isEditMode)
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.redAccent),
+              tooltip: 'Delete Medication',
+              onPressed: _confirmDelete,
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
