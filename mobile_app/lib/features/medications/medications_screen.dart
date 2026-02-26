@@ -4,7 +4,7 @@ import 'package:mobile_app/routes.dart';
 import '../../models/medication.dart';
 import '../../models/audit_log_entry.dart';
 import 'package:provider/provider.dart';
-import '../../services/profile_provider.dart';
+import 'package:mobile_app/features/medications/widgets/medication_skeleton.dart';
 
 class MedicationsScreen extends StatefulWidget {
   const MedicationsScreen({super.key});
@@ -68,6 +68,21 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
   ];
 
   String _filterValue = 'All';
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMedications();
+  }
+
+  Future<void> _loadMedications() async {
+    setState(() => _isLoading = true);
+    await Future.delayed(const Duration(milliseconds: 1500));
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +137,14 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
           Expanded(
             child: Consumer<ProfileProvider>(
                 builder: (context, profileProvider, child) {
+              if (_isLoading) {
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: 4,
+                  itemBuilder: (context, index) => const MedicationSkeleton(),
+                );
+              }
+
               final activeProfileId = profileProvider.activeProfile?.id;
 
               // Mock filtering logic for medications
