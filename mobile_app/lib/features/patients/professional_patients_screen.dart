@@ -475,7 +475,7 @@ class _ProfessionalPatientsScreenState
 
                   // Gender Filter
                   DropdownButtonFormField<String>(
-                    value: _selectedGender,
+                    initialValue: _selectedGender,
                     decoration: InputDecoration(
                       labelText: 'Gender',
                       border: OutlineInputBorder(
@@ -501,7 +501,7 @@ class _ProfessionalPatientsScreenState
 
                   // Condition Filter
                   DropdownButtonFormField<String>(
-                    value: _selectedCondition,
+                    initialValue: _selectedCondition,
                     decoration: InputDecoration(
                       labelText: 'Condition',
                       border: OutlineInputBorder(

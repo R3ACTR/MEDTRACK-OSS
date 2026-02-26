@@ -168,7 +168,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                           }
                           return null;
                         },
-                        value: _selectedType,
+                        initialValue: _selectedType,
                         hint: const Text("Type"),
                         decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(

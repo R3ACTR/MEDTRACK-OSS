@@ -69,7 +69,7 @@ class _AddPatientNoteViewState extends State<AddPatientNoteView> {
               _buildPatientInfoCard(context),
               const SizedBox(height: 24),
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: InputDecoration(
                   labelText: 'Category',
                   border: OutlineInputBorder(
