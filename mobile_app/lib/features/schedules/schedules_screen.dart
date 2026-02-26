@@ -15,8 +15,8 @@ class SchedulesScreen extends StatefulWidget {
 
 class _SchedulesScreenState extends State<SchedulesScreen> {
   // Date filter range
-  DateTime _startDate = DateTime.now().subtract(const Duration(days: 7));
-  DateTime _endDate = DateTime.now();
+  final DateTime _startDate = DateTime.now().subtract(const Duration(days: 7));
+  final DateTime _endDate = DateTime.now();
 
   // Mock schedule data updated with dates
   final List<ScheduleEntry> schedules = [
