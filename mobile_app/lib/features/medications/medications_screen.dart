@@ -258,6 +258,7 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
             Routes.addMedication,
           );
 
+          if (!context.mounted) return;
           if (result != null && result is Medication) {
             setState(() {
               medications.add(result);
@@ -287,6 +288,7 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
         context, Routes.addMedication,
         arguments: medicationToEdit);
 
+    if (!context.mounted) return;
     if (updatedMedication != null && updatedMedication is Medication) {
       setState(() {
         int index = medications.indexWhere((m) => m.id == updatedMedication.id);

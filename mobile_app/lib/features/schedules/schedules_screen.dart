@@ -192,6 +192,7 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
     try {
       await CsvExportService.exportAdherenceReport(filtered);
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Export failed: $e')),
       );
@@ -437,6 +438,7 @@ class _ScheduleCard extends StatelessWidget {
         context, Routes.addReminder,
         arguments: newReminder);
 
+    if (!context.mounted) return;
     if (updatedReminder != null && updatedReminder is Reminder) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

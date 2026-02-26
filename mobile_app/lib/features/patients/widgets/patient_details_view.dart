@@ -298,6 +298,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
               Routes.scheduleAppointment,
               arguments: _currentPatient,
             );
+            if (!context.mounted) return;
             if (result != null && result is Appointment) {
               setState(() {
                 _currentPatient.appointments.add(result);
@@ -341,6 +342,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
                 arguments: _currentPatient,
               );
 
+              if (!context.mounted) return;
               if (result != null && result is PatientNote) {
                 setState(() {
                   _currentPatient.notes.add(result);
@@ -1063,6 +1065,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
       'note': note,
     });
 
+    if (!mounted) return;
     if (result != null && result is PatientNote) {
       setState(() {
         final index = _currentPatient.notes.indexWhere((n) => n.id == note.id);
@@ -1098,6 +1101,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
       },
     );
 
+    if (!mounted) return;
     if (confirm == true) {
       setState(() {
         _currentPatient.notes.removeWhere((n) => n.id == note.id);
@@ -1165,7 +1169,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     );
 
     if (shouldDelete == true) {
-      if (mounted) {
+      if (context.mounted) {
         Navigator.of(context).pop('delete');
       }
     }

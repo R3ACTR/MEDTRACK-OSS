@@ -175,7 +175,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                              _reminders[index] = updatedItem;
                            });
                         } catch(e) {
-                          if(mounted) {
+                          if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Update failed: $e')),
                             );
@@ -196,7 +196,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                 _reminders.add(newReminder);
               });
             } catch (e) {
-              if (mounted) {
+              if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Failed to create reminder: $e')),
                 );

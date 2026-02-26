@@ -386,6 +386,7 @@ class _ProfessionalPatientsScreenState
       arguments: patient,
     );
 
+    if (!mounted) return;
     if (result == 'delete') {
       setState(() {
         _patients.removeWhere((p) => p.id == patient.id);
