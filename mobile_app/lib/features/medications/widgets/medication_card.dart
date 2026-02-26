@@ -217,12 +217,16 @@ class MedicationCard extends StatelessWidget {
                         color: medication.isActive ? medication.color : Colors.grey[600],
                       ),
                       const SizedBox(width: 6),
-                      Text(
-                        'NEXT DOSE: ${medication.nextDue}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          color: medication.isActive ? medication.color : Colors.grey[700],
+                      Expanded(
+                        child: Text(
+                          'NEXT DOSE: ${medication.nextDue}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: medication.isActive
+                                ? medication.color
+                                : Colors.grey[700],
+                          ),
                         ),
                       ),
                     ],
