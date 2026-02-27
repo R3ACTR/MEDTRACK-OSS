@@ -15,8 +15,8 @@ class SchedulesScreen extends StatefulWidget {
 
 class _SchedulesScreenState extends State<SchedulesScreen> {
   // Date filter range
-  DateTime _startDate = DateTime.now().subtract(const Duration(days: 7));
-  DateTime _endDate = DateTime.now();
+  final DateTime _startDate = DateTime.now().subtract(const Duration(days: 7));
+  final DateTime _endDate = DateTime.now();
 
   // Mock schedule data updated with dates
   final List<ScheduleEntry> schedules = [
@@ -192,6 +192,7 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
     try {
       await CsvExportService.exportAdherenceReport(filtered);
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Export failed: $e')),
       );
@@ -218,7 +219,7 @@ class _StatusChip extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: isActive ? color.withOpacity(0.15) : Colors.grey[100],
+          color: isActive ? color.withValues(alpha: 0.15) : Colors.grey[100],
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isActive ? color : Colors.grey[300]!,
@@ -264,7 +265,7 @@ class _ScheduleCard extends StatelessWidget {
                 // Icon
                 Container(
                   decoration: BoxDecoration(
-                    color: schedule.statusColor.withOpacity(0.15),
+                    color: schedule.statusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.all(10),
@@ -300,7 +301,7 @@ class _ScheduleCard extends StatelessWidget {
                 // Status Badge
                 Container(
                   decoration: BoxDecoration(
-                    color: schedule.statusColor.withOpacity(0.15),
+                    color: schedule.statusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   padding:
@@ -437,6 +438,7 @@ class _ScheduleCard extends StatelessWidget {
         context, Routes.addReminder,
         arguments: newReminder);
 
+    if (!context.mounted) return;
     if (updatedReminder != null && updatedReminder is Reminder) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

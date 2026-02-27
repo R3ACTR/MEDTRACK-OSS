@@ -309,7 +309,7 @@ class _ProfessionalPatientsScreenState
               child: InputChip(
                 label: Text('Gender: $_selectedGender'),
                 onDeleted: () => setState(() => _selectedGender = null),
-                backgroundColor: Colors.blue.withOpacity(0.1),
+                backgroundColor: Colors.blue.withValues(alpha: 0.1),
                 deleteIconColor: Colors.blue,
               ),
             ),
@@ -319,7 +319,7 @@ class _ProfessionalPatientsScreenState
               child: InputChip(
                 label: Text('Condition: $_selectedCondition'),
                 onDeleted: () => setState(() => _selectedCondition = null),
-                backgroundColor: Colors.blue.withOpacity(0.1),
+                backgroundColor: Colors.blue.withValues(alpha: 0.1),
                 deleteIconColor: Colors.blue,
               ),
             ),
@@ -386,6 +386,7 @@ class _ProfessionalPatientsScreenState
       arguments: patient,
     );
 
+    if (!mounted) return;
     if (result == 'delete') {
       setState(() {
         _patients.removeWhere((p) => p.id == patient.id);
@@ -475,7 +476,7 @@ class _ProfessionalPatientsScreenState
 
                   // Gender Filter
                   DropdownButtonFormField<String>(
-                    value: _selectedGender,
+                    initialValue: _selectedGender,
                     decoration: InputDecoration(
                       labelText: 'Gender',
                       border: OutlineInputBorder(
@@ -501,7 +502,7 @@ class _ProfessionalPatientsScreenState
 
                   // Condition Filter
                   DropdownButtonFormField<String>(
-                    value: _selectedCondition,
+                    initialValue: _selectedCondition,
                     decoration: InputDecoration(
                       labelText: 'Condition',
                       border: OutlineInputBorder(

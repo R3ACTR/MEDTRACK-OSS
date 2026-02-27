@@ -58,7 +58,7 @@ class Medication {
       'frequencyWeekly': frequencyWeekly,
       'purpose': purpose,
       'icon': icon,
-      'color': color.value,
+      'color': color.toARGB32(),
       'nextDue': nextDue,
       'isActive': isActive,
       'rxNumber': rxNumber,
