@@ -14,9 +14,9 @@ class Dependent {
     required this.name,
     required this.relation,
     this.emergencyProfile,
-    this.activityFeed = const [],
+    List<AuditLogEntry>? activityFeed,
     this.primaryCaregiverId = '-1',
-  });
+  }) : activityFeed = activityFeed ?? AuditLogEntry.emptyList();
 
   factory Dependent.fromJson(Map<String, dynamic> json) {
     return Dependent(
