@@ -16,6 +16,9 @@ class MedicationsScreen extends StatefulWidget {
 }
 
 class _MedicationsScreenState extends State<MedicationsScreen> {
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+
   // Mock medication data
   List<Medication> medications = [
     Medication(
@@ -215,22 +218,31 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
                   // Mock filtering logic for medications
                   final profileMeds = filteredMeds.where((m) {
                     bool matchesProfile = false;
-                    if (activeProfileId == 'D001' && (m.id == 1 || m.id == 2))
+                    if (activeProfileId == 'D001' && (m.id == 1 || m.id == 2)) {
                       matchesProfile = true;
-                    if (activeProfileId == 'D002' && m.id == 3)
+                    } else if (activeProfileId == 'D002' && m.id == 3) {
                       matchesProfile = true;
-                    if (activeProfileId == 'D003' && m.id == 4)
+                    } else if (activeProfileId == 'D003' && m.id == 4) {
                       matchesProfile = true;
-
-                    if ([1, 2, 3, 4].contains(m.id) == false) {
+                    } else if ([1, 2, 3, 4].contains(m.id) == false) {
                       matchesProfile = true;
                     }
-                    return matchesProfile;
+
+                    if (!matchesProfile) return false;
+
+                    // Apply search filter
+                    if (_searchQuery.isNotEmpty) {
+                      return m.name.toLowerCase().contains(_searchQuery.toLowerCase());
+                    }
+                    
+                    return true;
                   }).toList();
 
               if (profileMeds.isEmpty) {
-                return const Center(
-                    child: Text("No medications found for this dependent."));
+                return Center(
+                    child: Text(_searchQuery.isNotEmpty 
+                      ? "No medications found matching '$_searchQuery'."
+                      : "No medications found for this dependent."));
               }
 
               return ListView.builder(
@@ -356,6 +368,11 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
         );
       }
     }
+  }
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 }
 
